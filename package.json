@@ -8,7 +8,8 @@
 	},
 	"author" : "Max Kueng <me@maxkueng.com> (http://maxkueng.com/)",
 	"dependencies" : {
-		"jsdom" : ">=0.2.0"
+		"jsdom" : ">=0.2.0",
+		"simple-lastfm" : ""
 	},
 	"licenses" : [
 		{
