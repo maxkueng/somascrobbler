@@ -37,7 +37,6 @@ var tag = function (station, artist, track, tags, callback) {
 	station.accounts.forEach(function (account) {
 		if (account.lastfm) {
 			account.lastfm.track.addTags(artist, track, tags, function (err) {
-				console.log('tagged:', artist, '', track, 'err', err);
 			});
 		}
 	});
