@@ -7,7 +7,7 @@ var natural = require('natural');
 var soundEx = natural.SoundEx;
 var somafm = require('./lib/somafm');
 var SomaFmStation = somafm.Station;
-var LastFmNode = require('lastfm').LastFmNode;
+var LastfmAPI = require('lastfmapi');
 var databank = require('databank');
 var Databank = databank.Databank;
 var DatabankObject = databank.DatabankObject;
@@ -18,9 +18,9 @@ var config = require('./config');
 
 var avgDuration = null;
 
-var lfm = new LastFmNode({
-	api_key: config.lastfmAPIKey,
-	secret: config.lastfmAPISecret
+var lfm = new LastfmAPI({
+	'api_key' : config.lastfmAPIKey,
+	'secret' : config.lastfmAPISecret
 });
 
 var stations = config.stations || {};
@@ -33,125 +33,71 @@ var db = Databank.get('disk', {
 	}
 });
 
-var trackInfo = function (artist, track, callback) {
-	lfm.request('track.getInfo', {
-		'artist' : artist,
-		'track' : track,
-		'handlers' : {
-			'success' : function (rsp) {
-				if (rsp.track) {
-					callback(null, rsp.track);
-				} else {
-					callback(new Error("No track info"));
-				}
-			},
-			'error' : function (err) {
-				callback(err);
-			}
-		}
-	});
-};
-
-var trackCorrection = function (artist, track, callback) {
-	lfm.request('track.getCorrection', {
-		'artist' : artist,
-		'track' : track,
-		'handlers' : {
-			'success' : function (rsp) {
-				if (rsp.corrections && rsp.corrections.correction) {
-					callback(null, rsp.corrections.correction);
-				} else {
-					callback(new Error("No correction"));
-				}
-			},
-			'error' : function (err) {
-				callback(err);
-			}
-		}
-	});
-};
-
 var tag = function (station, artist, track, tags, callback) {
-
 	station.accounts.forEach(function (account) {
 		if (account.lastfm) {
-			account.lastfm.request('track.addTags', {
-				'artist' : artist,
-				'track' : track,
-				'tags' : tags.join(','),
-				'sk' : account.lastfmSession.key,
-				'handlers' : {
-					'success' : function (rsp) {
-						callback(null);
-					},
-					'error' : function (err) {
-						callback(err);
-					}
-				}
+			account.lastfm.track.addTags(artist, track, tags, function (err) {
+				console.log('tagged:', artist, '', track, 'err', err);
 			});
 		}
 	});
-
 };
 
 var scrobble = function (station, artist, song, album, mbid, duration, callback) {
 	station.accounts.forEach(function (account) {
 		if (!account.lastfm) {
-			account.lastfm = new LastFmNode({
-				api_key: config.lastfmAPIKey,
-				secret: config.lastfmAPISecret
+			account.lastfm = new LastfmAPI({
+				'api_key' : config.lastfmAPIKey,
+				'secret' : config.lastfmAPISecret
 			});
-			account.lastfmSession = account.lastfm.session(account.username, account.sessionKey);
+			account.lastfm.setSessionCredentials(account.username, account.sessionKey);
 		}
 
 		if (account.prevTrack) {
-			account.lastfm.update('scrobble', account.lastfmSession, {
-				'track' : account.prevTrack,
-				'timestamp' : account.utcTimestamp,
-				'handlers' : {
-					'success' : function (rsp) {
-					},
-					'error' : function (error) {
-					}
-				}
+			account.lastfm.track.scrobble({
+				'artist' : account.prevTrack.artist,
+				'track' : account.prevTrack.track,
+				'album' : account.prevTrack.album,
+				'mbid' : account.prevTrack.mbid,
+				'timestamp' : account.utcTimestamp
+
+			}, function (err, scrobbles) {
 			});
 		}
 
 		var track = {
-			'name' : song, 
-			'artist' : { '#text' : artist }
+			'artist' : artist,
+			'track' : song
 		};
-		if (album) { track.album = { '#text' : album }; }
-		if (mbid) { track.mbid = mbid; }
+		track.album = (album) ? album : null;
+		track.mbid = (mbid) ? mbid : null;
 
 		account.prevTrack = track;
 		account.utcTimestamp = Math.floor((new Date()).getTime() / 1000);
 
-		account.lastfm.update('nowplaying', account.lastfmSession, {
-			'track' : track,
-			'duration' : Math.floor(duration / 1000),
-			'handlers' : {
-				'success' : function (rsp) {
-					console.log(station.stationId, ':', artist, '-', song, '-', album);
-				},
-				'error' : function (error) {
-					if (error.error && error.error === 9) {
-						// Invalid session key
-						if (!account.failCount) { account.failCount = 0; }
-						account.failCount++;
+		account.lastfm.track.updateNowPlaying({
+			'artist' : track.artist,
+			'track' : track.track,
+			'album' : track.album,
+			'mbid' : track.mbid,
+			'duration' : Math.floor(duration / 1000)
 
-						if (account.failCount > 3) {
-							account.update({
-								'isAuthorized' : false
+		}, function (err, nowPlaying) {
+			if (err && err.error && err.error === 9) {
+				if (!account.failCount) { account.failCount = 0; }
+				account.failCount++;
 
-							}, function (err, obj) {
-								if (err) { throw err; }
-								station.accounts.splice(station.accounts.indexOf(account), 1);
-							});
-						}
-
-					}
+				if (account.failCount > 3) {
+					account.update({
+						'isAuthorized' : false
+					}, function (err, obj) {
+						if (err) { throw err; }
+						station.accounts.splice(station.accounts.indexOf(account), 1);
+					});
 				}
+
+			} else {
+				console.log(station.stationId, ':', artist, '-', song, '-', album);
 			}
 		});
 
@@ -179,8 +125,9 @@ db.connect({}, function (err) {
 
 		station.somafm = new SomaFmStation(station.stationId, station.stationName);
 		station.somafm.on('track', function (artist, song, album) {
-			trackCorrection(artist, song, function (err, correction) {
-				if (!err) {
+
+			lfm.track.getCorrection(artist, song, function (err, corrections) {
+				if (!err && corrections.correction) {
 					if (+correction['@attr'].artistcorrected === 1) {
 						artist = correction.track.artist.name;
 					}
@@ -189,7 +136,11 @@ db.connect({}, function (err) {
 					}
 				}
 
-				trackInfo(artist, song, function (err, info) {
+				lfm.track.getInfo({
+					'artist' : artist,
+					'track' : song
+
+				}, function (err, info) {
 					var scrobbleAlbum = false;
 					var mbid = null;
 					var duration = null;
@@ -231,8 +182,8 @@ db.connect({}, function (err) {
 						tag(station, artist, song, [ 'somafm', station.stationId ], function (err) { });
 					}
 				});
-
 			});
+
 
 		});
 		station.somafm.start();
@@ -287,7 +238,7 @@ app.post('/addaccount', function (req, res) {
 		if (err) { throw err; }
 		req.session.scrobblerAccountId = obj.id;
 
-		res.redirect('http://www.last.fm/api/auth/?api_key=' + config.lastfmAPIKey + '&cb=' + config.baseURL + 'authenticate');
+		res.redirect(lfm.getAuthenticationUrl({ 'cb' : config.baseURL + 'authenticate' }));
 	});
 });
 
@@ -301,45 +252,36 @@ app.get('/addaccountok', function (req, res) {
 app.get('/authenticate', function (req, res) {
 	var token = req.query.token;
 
-	var lastfm = new LastFmNode({
-		api_key: config.lastfmAPIKey,
-		secret: config.lastfmAPISecret
-	});
+	lfm.authenticate(token, function (err, session) {
+		if (!err) {
+			ScrobblerAccount.get(req.session.scrobblerAccountId, function (err, obj) {
+				if (err) { throw err; }
 
-	lastfm.session().authorise(token, {
-		handlers: {
-			authorised: function(session) {
-				ScrobblerAccount.get(req.session.scrobblerAccountId, function (err, obj) {
-					if (err) { throw err; }
+				ScrobblerAccount.search({
+					'sessionKey' : session.key
 
-					ScrobblerAccount.search({
-						'sessionKey' : session.key
+				}, function (err, accounts) {
+					if (accounts.length === 0) {
+						obj.update({
+							'sessionKey' : session.key,
+							'username' : session.name,
+							'isAuthorized' : true
 
-					}, function (err, accounts) {
-						if (accounts.length === 0) {
-							obj.update({
-								'sessionKey' : session.key,
-								'username' : session.user,
-								'isAuthorized' : true
+						}, function (err, obj) {
+							if (err) { throw err; }
 
-							}, function (err, obj) {
-								if (err) { throw err; }
+							if (stations.hasOwnProperty(obj.stationId)) {
+								stations[obj.stationId].accounts.push(obj);
+							}
 
-								if (stations.hasOwnProperty(obj.stationId)) {
-									stations[obj.stationId].accounts.push(obj);
-								}
+							res.redirect('/addaccountok');
+						});
 
-								res.redirect('/addaccountok');
-							});
-
-						} else {
-							res.redirect('/addaccountok?alreadyexists=1');
-						}
-					});
+					} else {
+						res.redirect('/addaccountok?alreadyexists=1');
+					}
 				});
-			},
-			error: function (error) {
-			}
+			});
 		}
 	});
 });
