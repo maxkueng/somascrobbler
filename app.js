@@ -8,11 +8,9 @@ var soundEx = natural.SoundEx;
 var somafm = require('./lib/somafm');
 var SomaFmStation = somafm.Station;
 var LastfmAPI = require('lastfmapi');
-var databank = require('databank');
-var Databank = databank.Databank;
-var DatabankObject = databank.DatabankObject;
-var Station = require('./lib/station').Station;
-var ScrobblerAccount = require('./lib/scrobbleraccount').ScrobblerAccount;
+var DataStore = require('nedb');
+var accounts = new DataStore('./data/accounts.db');
+accounts.loadDatabase();
 
 var config = require('./config');
 
@@ -24,14 +22,6 @@ var lfm = new LastfmAPI({
 });
 
 var stations = config.stations || {};
-
-var db = Databank.get('disk', {
-	'dir' : path.join('.', 'data'),
-	'schema' : {
-		'station' : Station.schema,
-		'scrobbleraccount' : ScrobblerAccount.schema
-	}
-});
 
 var tag = function (station, artist, track, tags, callback) {
 	station.accounts.forEach(function (account) {
@@ -103,90 +93,85 @@ var scrobble = function (station, artist, song, album, mbid, duration, callback)
 	});
 };
 
-db.connect({}, function (err) {
-	if (err) { throw err; }
-	DatabankObject.bank = db;
+_.forEach(stations, function (station, key, list) {
+	station.accounts = [];
 
-	_.forEach(stations, function (station, key, list) {
-		station.accounts = [];
+	accounts.find({
+		'stationId' : station.stationId,
+		'isAuthorized' : true
 
-		ScrobblerAccount.search({
-			'stationId' : station.stationId,
-			'isAuthorized' : true
-
-		}, function (err, accounts) {
-			if (err) { throw err; }
-			
-			_.forEach(accounts, function (account) {
-				station.accounts.push(account);
-			});
+	}, function (err, accs) {
+		if (err) { throw err; }
+		
+		_.forEach(accs, function (account) {
+			station.accounts.push(account);
 		});
-
-		station.somafm = new SomaFmStation(station.stationId, station.stationName);
-		station.somafm.on('track', function (artist, song, album) {
-
-			lfm.track.getCorrection(artist, song, function (err, corrections) {
-				if (!err && corrections.correction) {
-					if (+correction['@attr'].artistcorrected === 1) {
-						artist = correction.track.artist.name;
-					}
-					if (+correction['@attr'].trackcorrected === 1) {
-						song = correction.track.name;
-					}
-				}
-
-				lfm.track.getInfo({
-					'artist' : artist,
-					'track' : song
-
-				}, function (err, info) {
-					var scrobbleAlbum = false;
-					var mbid = null;
-					var duration = null;
-
-					if (!err) {
-						if (info.album && info.album.title) {
-							var lev = natural.LevenshteinDistance(info.album.title, album);
-
-							if (lev <= 4) {
-								scrobbleAlbum = true;
-							} else {
-								scrobbleAlbum = soundEx.compare(info.album.title, album);
-							}
-
-							if (scrobbleAlbum) {
-								album = info.album.title;
-							}
-
-							album = (scrobbleAlbum) ? info.album.title : null;
-						}
-
-						if (info.duration) {
-							if (avgDuration) {
-								avgDuration = Math.floor((avgDuration + Number(info.duration)) / 2);
-							} else {
-								avgDuration = Number(info.duration);
-							}
-						}
-
-						duration = (info.duration) ? Number(info.duration) : avgDuration;
-						mbid = (info.mbid) ? info.mbid : null;
-
-						scrobble(station, artist, song, album, mbid, duration, function (err) { });
-						tag(station, artist, song, [ 'somafm', station.stationId ], function (err) { });
-
-					} else {
-						// No info, so we scrobble as-is
-						scrobble(station, artist, song, null, avgDuration, function (err) { });
-						tag(station, artist, song, [ 'somafm', station.stationId ], function (err) { });
-					}
-				});
-			});
-
-
-		});
-		station.somafm.start();
 	});
+
+	station.somafm = new SomaFmStation(station.stationId, station.stationName);
+	station.somafm.on('track', function (artist, song, album) {
+
+		lfm.track.getCorrection(artist, song, function (err, corrections) {
+			if (!err && corrections.correction) {
+				if (+correction['@attr'].artistcorrected === 1) {
+					artist = correction.track.artist.name;
+				}
+				if (+correction['@attr'].trackcorrected === 1) {
+					song = correction.track.name;
+				}
+			}
+
+			lfm.track.getInfo({
+				'artist' : artist,
+				'track' : song
+
+			}, function (err, info) {
+				var scrobbleAlbum = false;
+				var mbid = null;
+				var duration = null;
+
+				if (!err) {
+					if (info.album && info.album.title) {
+						var lev = natural.LevenshteinDistance(info.album.title, album);
+
+						if (lev <= 4) {
+							scrobbleAlbum = true;
+						} else {
+							scrobbleAlbum = soundEx.compare(info.album.title, album);
+						}
+
+						if (scrobbleAlbum) {
+							album = info.album.title;
+						}
+
+						album = (scrobbleAlbum) ? info.album.title : null;
+					}
+
+					if (info.duration) {
+						if (avgDuration) {
+							avgDuration = Math.floor((avgDuration + Number(info.duration)) / 2);
+						} else {
+							avgDuration = Number(info.duration);
+						}
+					}
+
+					duration = (info.duration) ? Number(info.duration) : avgDuration;
+					mbid = (info.mbid) ? info.mbid : null;
+
+					scrobble(station, artist, song, album, mbid, duration, function (err) { });
+					tag(station, artist, song, [ 'somafm', station.stationId ], function (err) { });
+
+				} else {
+					// No info, so we scrobble as-is
+					scrobble(station, artist, song, null, avgDuration, function (err) { });
+					tag(station, artist, song, [ 'somafm', station.stationId ], function (err) { });
+				}
+			});
+		});
+
+
+	});
+	station.somafm.start();
 });
 
 var app = express();
@@ -229,14 +214,21 @@ app.post('/addaccount', function (req, res) {
 
 	if (!stations.hasOwnProperty(station)) { return res.redirect('/error'); }
 
-	ScrobblerAccount.create({
-		'description' : description,
-		'stationId' : station
+	console.log('i', {
+		description: description,
+		stationId: station
+	});
+
+	accounts.insert({
+		description: description,
+		stationId: station
 
 	}, function (err, obj) {
+		console.log('o', obj);
 		if (err) { throw err; }
-		req.session.scrobblerAccountId = obj.id;
+		req.session.scrobblerAccountId = obj._id;
 
+		console.log(lfm.getAuthenticationUrl({ 'cb' : config.baseURL + 'authenticate' }));
 		res.redirect(lfm.getAuthenticationUrl({ 'cb' : config.baseURL + 'authenticate' }));
 	});
 });
@@ -253,20 +245,22 @@ app.get('/authenticate', function (req, res) {
 
 	lfm.authenticate(token, function (err, session) {
 		if (!err) {
-			ScrobblerAccount.get(req.session.scrobblerAccountId, function (err, obj) {
+			accounts.findOne({ _id: req.session.scrobblerAccountId }, function (err, obj) {
 				if (err) { throw err; }
 
-				ScrobblerAccount.search({
-					'sessionKey' : session.key
+				accounts.find({
+					sessionKey: session.key
 
-				}, function (err, accounts) {
-					if (accounts.length === 0) {
-						obj.update({
-							'sessionKey' : session.key,
-							'username' : session.name,
-							'isAuthorized' : true
+				}, function (err, accs) {
+					if (accs.length === 0) {
+						accounts.update({ _id: obj._id }, {
+							$set: {
+								sessionKey: session.key,
+								username: session.name,
+								isAuthorized: true
+							}
 
-						}, function (err, obj) {
+						}, {}, function (err) {
 							if (err) { throw err; }
 
 							if (stations.hasOwnProperty(obj.stationId)) {

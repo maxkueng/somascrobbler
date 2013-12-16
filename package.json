@@ -13,11 +13,11 @@
     "underscore": "1.4.x",
     "node-uuid": "1.4.x",
     "qs": "0.5.x",
-    "express": "3.x",
     "ejs": "0.8.x",
     "natural": "0.1.x",
     "express-ejs-layouts": "0.3.x",
-    "databank": "~0.19.0"
+    "nedb": "~0.9.3",
+    "express": "~3.4.7"
   },
   "licenses": [
     {
