@@ -12,10 +12,13 @@ exports.lastfmAPISecret = 'YOUR_API_SECRET';
 exports.stations = {
 	'groovesalad' : { 'stationId' : 'groovesalad', 'stationName' : 'Groove Salad' },
 	'lush' : { 'stationId' : 'lush', 'stationName' : 'Lush' },
+	'earwaves': { 'stationId' : 'earwaves', 'stationName': 'Earwaves' },
+	'deepspaceone': { 'stationId' : 'deepspaceone', 'stationName': 'Deep Space One' },
 	'dronezone' : { 'stationId' : 'dronezone', 'stationName' : 'Drone Zone' },
 	'sonicuniverse' : { 'stationId' : 'sonicuniverse', 'stationName' : 'Sonic Universe' },
 	'digitalis' : { 'stationId' : 'digitalis', 'stationName' : 'Digitalis' },
 	'indiepop' : { 'stationId' : 'indiepop', 'stationName' : 'Indie Pop Rocks!' },
+	'folkfwd' : { 'stationId' : 'folkfwd', 'stationName' : 'Folk Forward' },
 	'poptron' : { 'stationId' : 'poptron', 'stationName' : 'PopTron' },
 	'bagel' : { 'stationId' : 'bagel', 'stationName' : 'BAGeL Radio' },
 	'covers' : { 'stationId' : 'covers', 'stationName' : 'Covers' },
