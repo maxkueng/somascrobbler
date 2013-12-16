@@ -214,21 +214,14 @@ app.post('/addaccount', function (req, res) {
 
 	if (!stations.hasOwnProperty(station)) { return res.redirect('/error'); }
 
-	console.log('i', {
-		description: description,
-		stationId: station
-	});
-
 	accounts.insert({
 		description: description,
 		stationId: station
 
 	}, function (err, obj) {
-		console.log('o', obj);
 		if (err) { throw err; }
 		req.session.scrobblerAccountId = obj._id;
 
-		console.log(lfm.getAuthenticationUrl({ 'cb' : config.baseURL + 'authenticate' }));
 		res.redirect(lfm.getAuthenticationUrl({ 'cb' : config.baseURL + 'authenticate' }));
 	});
 });
