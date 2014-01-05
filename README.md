@@ -1,20 +1,26 @@
-Soma Scrobbler
-==============
+SomaScrobbler
+=============
 
-This is a server application that scrobbles [SomaFM](http://somafm.com/) radio stations to [Last.fm](http://last.fm/). You may have multiple Last.fm accounts scrobble the same SomaFM station.
+This scrobbles [SomaFM](http://somafm.com/) radio stations to
+[Last.fm](http://www.last.fm/).
 
-Getting Started
----------------
+## Installation
 
-Requirements:
+This requires [Node.js](http://nodejs.org/) version 0.10 or greater.
 
- - Node.js
- - npm
+Clone this repository and change in to the directory.
+Then copy "config.dist.json" to "config.json" and make the necessary
+changes.
 
-Install and run:
+```bash
+cd somascrobbler
+cp config.dist.json config.json
+vim config.json
+```
 
- 1. Fork this repository and clone it. Or don't fork it and just clone it.
- 2. Install dependencies: `npm install`
- 3. Rename (or copy) `config.dist.js` to `config.js` and make necessary changes.
- 4. Run: `node app.js`
- 5. Visit the web interface to authenticate with a Last.fm account
+Then install the dependencies and run "app.js".
+
+```bash
+npm install
+node app.js
+```

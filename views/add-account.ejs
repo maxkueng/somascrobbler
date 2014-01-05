@@ -1,0 +1,32 @@
+<div class="page-header">
+	<h1>Add Account</h1>
+</div>
+
+<% if (mode === 'success' && account) { %>
+<div class="alert alert-success"><strong>Success!</strong> Account <%= account.id %> created.
+<br />Scrobbling <a href="http://somafm.com/<%= account.stationId %>"><%= account.stationId %></a> to <a href="http://www.last.fm/user/<%= account.username %>"><%= account.username %></a>.</div>
+<% } %>
+
+<div class="row">
+	<form action= "/add-account" method="post" class="form-horizontal" role="form">
+		<div class="form-group">
+			<label for="selectStation" class="col-sm-2 control-label">Station</label>
+			<div class="col-sm-8">
+				<select class="form-control" name="station" id="selectStation">
+				<%
+				Object.keys(stations).forEach(function (stationId) {
+				%>
+					<option value="<%= stationId %>"><%= stationId %></option>
+				<%
+				});
+				%>
+				</select>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-offset-2 col-sm-8">
+				<button type="submit" class="btn btn-default">Authenticate</button>
+			</div>
+		</div>
+	</form>
+</div>
