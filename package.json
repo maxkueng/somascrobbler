@@ -1,31 +1,21 @@
 {
   "name": "somascrobbler",
-  "description": "Scrobble SomaFM stations to last.fm",
-  "version": "0.1.0",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/maxkueng/somascrobbler.git"
+  "version": "0.2.0",
+  "description": "Scrobble SomaFM radio stations to Last.fm",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Max Kueng <me@maxkueng.com> (http://maxkueng.com/)",
+  "license": "MIT",
   "dependencies": {
-    "jsdom": "0.3.x",
-    "lastfmapi": "0.0.x",
-    "underscore": "1.4.x",
-    "node-uuid": "1.4.x",
-    "qs": "0.5.x",
-    "ejs": "0.8.x",
-    "natural": "0.1.x",
-    "express-ejs-layouts": "0.3.x",
-    "nedb": "~0.9.3",
-    "express": "~3.4.7"
-  },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/maxkueng/somascrobbler/raw/master/LICENSE"
-    }
-  ],
-  "engines": {
-    "node": "*"
+    "express-ejs-layouts": "~0.3.1",
+    "express": "~3.4.7",
+    "ejs": "~0.8.5",
+    "lastfmapi": "0.0.5",
+    "debug": "~0.7.4",
+    "socket.io-client": "~0.9.16",
+    "dsds": "0.0.2",
+    "moment": "~2.5.0"
   }
 }
