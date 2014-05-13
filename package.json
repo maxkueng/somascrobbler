@@ -1,6 +1,6 @@
 {
   "name": "somascrobbler",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Scrobble SomaFM radio stations to Last.fm",
   "main": "app.js",
   "scripts": {
