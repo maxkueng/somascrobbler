@@ -8,6 +8,9 @@ This scrobbles [SomaFM](http://somafm.com/) radio stations to
 listening, I recommend checking out [moneypenny](https://github.com/moneypenny)'s
 [SomaPlayer Chrome extension](https://chrome.google.com/webstore/detail/somaplayer/dpcghdgbhjkihgnnbojldhjmcbieofgo).
 
+**Note 2:** If you want to write your own software that consumes SomaFM track data,
+just like the SomaPlayer extension, please check out [api.somascrobbler.com](http://api.somascrobbler.com/)
+
 ## Installation
 
 This requires [Node.js](http://nodejs.org/) version 0.10.26 or greater.
