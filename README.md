@@ -4,9 +4,13 @@ SomaScrobbler
 This scrobbles [SomaFM](http://somafm.com/) radio stations to
 [Last.fm](http://www.last.fm/).
 
+**Note:** If you want to scrobble SomaFM radio from your desktop computer while
+listening, I recommend checking out [moneypenny](https://github.com/moneypenny)'s
+[SomaPlayer Chrome extension](https://chrome.google.com/webstore/detail/somaplayer/dpcghdgbhjkihgnnbojldhjmcbieofgo).
+
 ## Installation
 
-This requires [Node.js](http://nodejs.org/) version 0.10 or greater.
+This requires [Node.js](http://nodejs.org/) version 0.10.26 or greater.
 
 Clone this repository and change in to the directory.
 Then copy "config.dist.json" to "config.json" and make the necessary
@@ -33,7 +37,7 @@ differently) and add accounts.
 MIT License
 
 Copyright (c) 2014 Max Kueng (http://maxkueng.com/)
- 
+
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
 "Software"), to deal in the Software without restriction, including
@@ -41,10 +45,10 @@ without limitation the rights to use, copy, modify, merge, publish,
 distribute, sublicense, and/or sell copies of the Software, and to
 permit persons to whom the Software is furnished to do so, subject to
 the following conditions:
- 
+
 The above copyright notice and this permission notice shall be
 included in all copies or substantial portions of the Software.
- 
+
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
