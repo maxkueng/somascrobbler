@@ -1,0 +1,24 @@
+<h1>Accounts</h1>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th>Username</th>
+			<th>Station</th>
+			<th>Enabled</th>
+			<th>Authorized</th>
+		</tr>
+	</thead>
+	<tbody>
+		{{#each accounts}}
+		<tr>
+			<td>{{ this.id }}</td>
+			<td>{{ this.username }}</td>
+			<td>{{ this.stationId }}</td>
+			<td>{{#if this.enabled}}Yes{{else}}No{{/if}}</td>
+			<td>{{#if this.authorized}}Yes{{else}}No{{/if}}</td>
+		</tr>
+		{{/each}}
+	</tbody>
+</table>

@@ -1,0 +1,13 @@
+<h1>Add Account</h1>
+<form method="post" action="/add-account">
+	<div class="form-group">
+		<label for="stationSelect">Station</label>
+		<select id="stationSelect" name="station" class="form-control">
+			{{#each stations}}
+			<option value="{{{ this.id }}}">{{ this.title }}</option>
+			{{/each}}
+		</select>
+	</div>
+
+	<button type="submit" class="btn btn-primary">Authenticate</button>
+</form>
