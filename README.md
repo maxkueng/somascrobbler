@@ -11,29 +11,62 @@ listening, I recommend checking out [moneypenny](https://github.com/moneypenny)'
 **Note 2:** If you want to write your own software that consumes SomaFM track data,
 just like the SomaPlayer extension, please check out [api.somascrobbler.com](http://api.somascrobbler.com/)
 
-## Installation
+## Usage
 
-This requires [Node.js](http://nodejs.org/) version 0.10.26 or greater.
+### Installation
 
-Clone this repository and change in to the directory.
-Then copy "config.dist.json" to "config.json" and make the necessary
-changes.
+This requires a recent version of [Node.js](http://nodejs.org/).
 
-```bash
-cd somascrobbler
-cp config.dist.json config.json
-vim config.json
-```
+Clone this repository and change in to the directory. Then install the dependencies:
 
-Then install the dependencies and run "app.js".
-
-```bash
+```sh
 npm install
-node app.js
 ```
 
-Visit the web interface http://127.0.0.1:3000 (unless configured
-differently) and add accounts.
+### Configuration
+
+Create a config file called ".somascrobblerrc". Here's what a config file might look like:
+
+```
+dataDir = ./data
+trackApi = http://api.somascrobbler.com:80
+lastfmApiKey = your_lastfm_api_key_123456789012
+lastfmApiSecret = your_lastfm_api_secret_097654321
+username = admin
+password = secret
+address = 0.0.0.0
+port = 3000
+uri = http://localhost:3000
+```
+
+ - `dataDir` *(default: ./data)*: Path to a directory where SomaScrobbler will
+   store account data.
+ - `trackApi` *(default: http://api.somascrobbler.com:80)*: URL to the
+   SomaScrobbler API endpoint including port.
+ - `lastfmApiKey`: Your Last.fm API key.
+ - `lastfmApiSecret`: Your Last.fm API secret.
+ - `username` *(default: admin)*: Username for the web interface.
+ - `password` *(default: rompotaya)*: Password for the web interface. The
+   default password is Vulcan for "maintenance". You should change this.
+ - `address` *(default: 0.0.0.0)*: The IP of the interface the web server will listen on.
+ - `port` *(default: 3000)*: The port on which the web server will listen on.
+ - `uri` *(default: http://localhost:3000)*: The full public URI including port
+   unless you're using port 80 for HTTP or 443 for HTTPS. This is used as the
+   callback URL for Last.fm authentication.
+
+
+### Start
+
+```sh
+npm start
+```
+
+Visit the web interface under http://localhost:3000 (unless configured
+differently) and log in using the credentials provided in the config file.
+
+Click "Add account", select a SomaFM station and click "Authenticate". After
+you have allowed SomaScrobbler to access your Last.fm profile it should start
+scrobbling immediately.
 
 ## License
 
