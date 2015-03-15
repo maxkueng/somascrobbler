@@ -132,7 +132,7 @@ docker run -d \
   -e somascrobbler_lastfmApiSecret=your_lastfm_api_secret_097654321 \
   -e somascrobbler_uri=http://localhost:3000 \
   -e somascrobbler_password=topsecret \
-  -v /path/to/somascrobbler/data:/usr/src/app/data
+  -v /path/to/somascrobbler/data:/usr/src/app/data \
   --restart on-failure \
   maxkueng/somascrobbler:latest
 ```
@@ -143,7 +143,7 @@ variables (or use a combination of both):
 ```sh
 docker run -d \
   -p 3000:3000 \
-  -v /path/to/somascrobbler/data:/usr/src/app/data
+  -v /path/to/somascrobbler/data:/usr/src/app/data \
   -v /path/to/the/config/file:/etc/somascrobblerrc \
   --restart on-failure \
   maxkueng/somascrobbler:latest
