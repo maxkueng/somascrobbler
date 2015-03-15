@@ -1,15 +1,5 @@
-FROM node:0.12
+FROM iojs:1.5-onbuild
 MAINTAINER Max Kueng <me@maxkueng.com>
 
+VOLUME /usr/src/app/data
 EXPOSE 3000
-
-COPY . /src
-RUN cd /src; npm install
-
-VOLUME /src/data
-
-WORKDIR /src
-
-ENTRYPOINT [ "/usr/local/bin/npm", "run" ]
-
-CMD [ "start" ]
