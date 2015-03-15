@@ -34,8 +34,13 @@ var app = express();
 app.set('port', parseInt(config.port, 10));
 app.set('address', config.address);
 
-app.set('views', path.join(__dirname, 'views'));
-app.engine('.hbs', hbs({ defaultLayout: 'main', extname: '.hbs' }));
+app.set('views', path.resolve(__dirname, 'views'));
+app.engine('.hbs', hbs({
+	layoutsDir: path.join(app.get('views'), 'layouts'),
+	partialsDir: path.join(app.get('views'), 'partials'),
+	defaultLayout: 'main',
+	extname: '.hbs'
+}));
 app.set('view engine', '.hbs');
 
 // development-only settings
@@ -51,7 +56,7 @@ if (process.env.NODE_ENV === 'production') {
 app.use(logger('dev', { stream: logStream }))
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static('./static'));
+app.use(express.static(path.resolve(__dirname, './static')));
 app.use('/', require('./routes'));
 
 app.listen(app.get('port'), app.get('address'));
