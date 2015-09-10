@@ -5,7 +5,7 @@ var config = require('./config');
 process.env.NODE_ENV = process.env.NODE_ENV || 'production';
 
 bole.output({
-	level: config.logLevel,
+	level: config.get('loglevel'),
 	stream: process.stdout
 });
 

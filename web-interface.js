@@ -31,8 +31,8 @@ var auth = function (username, password) {
 
 var app = express();
 
-app.set('port', parseInt(config.port, 10));
-app.set('address', config.address);
+app.set('port', parseInt(config.get('server.port'), 10));
+app.set('address', config.get('server.address'));
 
 app.set('views', path.resolve(__dirname, 'views'));
 app.engine('.hbs', hbs({
@@ -50,7 +50,7 @@ if (process.env.NODE_ENV === 'development') {
 
 // production-only settings
 if (process.env.NODE_ENV === 'production') {
-	app.use(auth(config.username, config.password))
+	app.use(auth(config.get('admin.username'), config.get('admin.password')))
 }
 
 app.use(logger('dev', { stream: logStream }))

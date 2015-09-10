@@ -13,7 +13,7 @@ extension](https://chrome.google.com/webstore/detail/somaplayer/dpcghdgbhjkihgnn
 by [moneypenny](https://github.com/moneypenny). It's powered by the SomaScrobbler API.  
 If you want to write your own software that consumes SomaFM track data, just
 like the SomaPlayer extension, please check out
-[api2.somascrobbler.com](http://api2.somascrobbler.com/) ._
+[api.somascrobbler.com](http://api.somascrobbler.com/) ._
 
 
 ## Installation
@@ -29,57 +29,63 @@ npm install somascrobbler -g
 ## Configuration
 
 Create a config file "$HOME/.somascrobblerrc" or "/etc/somascrobblerrc",
-or any other location supported by the [rc](https://www.npmjs.com/package/rc)
+or any other location supported by the [rucola](https://www.npmjs.com/package/rucola)
 module.
 
 Here's a sample config file:
 
-```
-logLevel = info
-dataDir = ./data
-trackApi = http://api.somascrobbler.com:80
-lastfmApiKey = your_lastfm_api_key_123456789012
-lastfmApiSecret = your_lastfm_api_secret_097654321
-username = admin
-password = secret
-address = 0.0.0.0
-port = 3000
-uri = http://localhost:3000
+```ini
+loglevel    =   info
+datadir     =   ./data
+trackapi    =   http://api.somascrobbler.com:80
+
+[lastfm]
+apikey      =   your_lastfm_api_key_123456789012
+apisecret   =   your_lastfm_api_secret_097654321
+
+[admin]
+username    =   admin
+password    =   secret
+
+[server]
+address     =   0.0.0.0
+port        =   3000
+uri         =   http://localhost:3000
 ```
 
- - `logLevel` *(string; optional; default: info)*: The log level. Can be either
+ - `loglevel` *(string; optional; default: info)*: The log level. Can be either
    "debug", "info", "warn", or "error".
 
- - `dataDir` *(string; optional; default: ./data)*: Path to a directory where
+ - `datadir` *(string; optional; default: ./data)*: Path to a directory where
    SomaScrobbler will store account data.
 
- - `trackApi` *(string; optional; default: http://api2.somascrobbler.com:80)*:
+ - `trackapi` *(string; optional; default: http://api.somascrobbler.com:80)*:
    URL to the SomaScrobbler API endpoint including port.
 
- - `lastfmApiKey` *(string; required)*: Your Last.fm API key.
+ - `lastfm.apikey` *(string; required)*: Your Last.fm API key.
 
- - `lastfmApiSecret` *(string; required)*: Your Last.fm API secret.
+ - `lastfm.apisecret` *(string; required)*: Your Last.fm API secret.
 
- - `username` *(string; optional; default: admin)*: Username for the web
+ - `admin.username` *(string; optional; default: admin)*: Username for the web
    interface.
 
- - `password` *(string; recommended; default: rompotaya)*: Password for the web
-   interface. The default password is Vulcan for "maintenance". You should
-   change this.
+ - `admin.password` *(string; recommended; default: rompotaya)*: Password for
+   the web interface. The default password is Vulcan for "maintenance". You
+   should change this.
 
- - `address` *(string; optional; default: 0.0.0.0)*: The IP of the interface
-   the web server will listen on.
+ - `server.address` *(string; optional; default: 0.0.0.0)*: The IP of the
+   interface the web server will listen on.
 
- - `port` *(integer; optional; default: 3000)*: The port on which the web
-   server will listen on.
+ - `server.port` *(integer; optional; default: 3000)*: The port on which the
+   web server will listen on.
 
- - `uri` *(string; recommended; default: http://localhost:3000)*: The full
-   public URI including port unless you're using port 80 for HTTP or 443 for
-   HTTPS. This is used as the callback URL for Last.fm authentication.
+ - `server.uri` *(string; recommended; default: http://localhost:3000)*: The
+   full public URI including port unless you're using port 80 for HTTP or 443
+   for HTTPS. This is used as the callback URL for Last.fm authentication.
 
 Configuration options can also be provided through environment variables. For
-example, the valirable key for `lastfmApiKey` would be
-`somascrobbler_lastfmApiKey`.
+example, the valirable key for `lastfm.apikey` would be
+`SOMASCROBBLER_LASTFM_APIKEY`.
 
 ## Run
 
@@ -97,7 +103,7 @@ Additionally, configuration options can be overridden through command-line
 arguments:
 
 ```sh
-somascrobbler --lastfmApiKey=your_lastfm_api_key_123456789012 ...
+somascrobbler --lastfm-apikey=your_lastfm_api_key_123456789012 ...
 ```
 
 Visit the web interface under http://localhost:3000 (unless configured
@@ -128,10 +134,10 @@ To run it, provide all non-default configuration options as environment variable
 ```sh
 docker run -d \
   -p 3000:3000 \
-  -e somascrobbler_lastfmApiKey=your_lastfm_api_key_123456789012 \
-  -e somascrobbler_lastfmApiSecret=your_lastfm_api_secret_097654321 \
-  -e somascrobbler_uri=http://localhost:3000 \
-  -e somascrobbler_password=topsecret \
+  -e SOMASCROBBLER_LASTFM_APIKEY=your_lastfm_api_key_123456789012 \
+  -e SOMASCROBBLER_LASTFM_APISECRET=your_lastfm_api_secret_097654321 \
+  -e SOMASCROBBLER_SERVER_URI=http://localhost:3000 \
+  -e SOMASCROBBLER_ADMIN_PASSWORD=topsecret \
   -v /path/to/somascrobbler/data:/usr/src/app/data \
   --restart on-failure \
   maxkueng/somascrobbler:latest

@@ -7,8 +7,8 @@ var apiClient = require('./api-client');
 var accounts = require('./accounts');
 
 var lastfm = new LastfmAPI({
-	api_key: config.lastfmApiKey,
-	secret: config.lastfmApiSecret
+	api_key: config.get('lastfm.apikey'),
+	secret: config.get('lastfm.apisecret')
 });
 
 router.get('/', function (req, res) {
@@ -38,7 +38,7 @@ router.post('/add-account', function (req, res) {
 		enabled: false
 	});
 
-	var urlObj = url.parse(config.uri);
+	var urlObj = url.parse(config.get('server.uri'));
 	urlObj.pathname = '/authenticate';
 	urlObj.query = { id: account.id };
 

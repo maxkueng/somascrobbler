@@ -9,7 +9,7 @@ var io = require('socket.io-client');
 module.exports = assign({},
 	EventEmitter.prototype,
 	{
-		apiUrl: config.trackApi,
+		apiUrl: config.get('trackapi'),
 		cache: {},
 
 		connect: function () {

@@ -16,8 +16,8 @@ var getLastfmClient = (function (accountId) {
 			log.debug('create last.fm client', accountId.substr(0, 8), account.username);
 
 			var client = new LastfmAPI({
-				api_key: config.lastfmApiKey,
-				secret: config.lastfmApiSecret
+				api_key: config.get('lastfm.apikey'),
+				secret: config.get('lastfm.apisecret')
 			});
 
 			client.setSessionCredentials(account.username, account.sessionKey);
