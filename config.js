@@ -1,7 +1,7 @@
 var defaults = {
 	loglevel: 'info',
 	datadir: './data',
-	trackapi: 'http://api.somascrobbler.com:80',
+	trackapi: 'https://api.somascrobbler.com:443',
 	lastfm: {
 		apikey: null,
 		apisecret: null
