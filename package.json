@@ -1,6 +1,6 @@
 {
   "name": "somascrobbler",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Scrobble SomaFM radio stations to Last.fm",
   "main": "server.js",
   "bin": {
