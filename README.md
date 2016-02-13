@@ -13,7 +13,7 @@ extension](https://chrome.google.com/webstore/detail/somaplayer/dpcghdgbhjkihgnn
 by [moneypenny](https://github.com/moneypenny). It's powered by the SomaScrobbler API.  
 If you want to write your own software that consumes SomaFM track data, just
 like the SomaPlayer extension, please check out
-[api.somascrobbler.com](http://api.somascrobbler.com/) ._
+[api.somascrobbler.com](https://api.somascrobbler.com/) ._
 
 
 ## Installation
@@ -37,7 +37,7 @@ Here's a sample config file:
 ```ini
 loglevel    =   info
 datadir     =   ./data
-trackapi    =   http://api.somascrobbler.com:80
+trackapi    =   https://api.somascrobbler.com:443
 
 [lastfm]
 apikey      =   your_lastfm_api_key_123456789012
@@ -59,7 +59,7 @@ uri         =   http://localhost:3000
  - `datadir` *(string; optional; default: ./data)*: Path to a directory where
    SomaScrobbler will store account data.
 
- - `trackapi` *(string; optional; default: http://api.somascrobbler.com:80)*:
+ - `trackapi` *(string; optional; default: https://api.somascrobbler.com:443)*:
    URL to the SomaScrobbler API endpoint including port.
 
  - `lastfm.apikey` *(string; required)*: Your Last.fm API key.
