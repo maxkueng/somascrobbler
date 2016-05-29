@@ -10,7 +10,7 @@ Last.fm accounts at once.
 _**Note:** If you want to scrobble SomaFM radio from your desktop computer while
 listening, I recommend checking the [SomaPlayer Chrome
 extension](https://chrome.google.com/webstore/detail/somaplayer/dpcghdgbhjkihgnnbojldhjmcbieofgo)
-by [moneypenny](https://github.com/moneypenny). It's powered by the SomaScrobbler API.  
+by [cheshire137](https://github.com/cheshire137). It's powered by the SomaScrobbler API.  
 If you want to write your own software that consumes SomaFM track data, just
 like the SomaPlayer extension, please check out
 [api.somascrobbler.com](https://api.somascrobbler.com/) ._
